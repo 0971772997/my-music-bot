@@ -100,7 +100,9 @@ async def play(ctx, *, search: str):
                 url2 = info.get('url') or info['formats'][0]['url']
                 title = info.get('title', 'Nhạc')
             except Exception as e:
-                return await ctx.send("❌ Không tìm thấy bài hát hoặc lỗi YouTube!")
+                # Hiện lỗi chi tiết ra Discord để chúng ta dễ dàng "bắt bài" YouTube
+                error_msg = str(e).split('\n')[0] # Lấy dòng lỗi đầu tiên cho gọn
+                return await ctx.send(f"❌ Lỗi trích xuất nhạc: `{error_msg}`")
 
         # 3. Xử lý đưa vào hàng chờ phát nhạc
         song = {'url': url2, 'title': title}
