@@ -46,5 +46,5 @@ async def stop(ctx):
 keep_alive()
 
 # Lấy Token từ biến môi trường (an toàn tuyệt đối)
-my_secret = os.environ.get('MTUxNzI0ODA0MzI5NDkxNjgwMA.GvMrTn.udwwB-S2ihULIZ_eWjaCW-GujO-WA_6ojOeDsI')
+my_secret = os.environ.get('DISCORD_TOKEN') # Đặt tên biến là DISCORD_TOKEN
 bot.run(my_secret)
