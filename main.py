@@ -37,8 +37,14 @@ YTDL_OPTIONS = {
     'noplaylist': True, 
     'quiet': True,
     'default_search': 'ytsearch',
-    # Khai báo file cookie để bot tự động đăng nhập né bộ lọc của YouTube
-    'cookiefile': 'youtube_cookies.txt' 
+    # Giữ nguyên khai báo Cookie để vượt xác minh người thật
+    'cookiefile': 'youtube_cookies.txt',
+    # Thêm giả lập Android & Web nhúng để ép YouTube trả về đúng định dạng âm thanh
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['android', 'web_embedded']
+        }
+    }
 }
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
