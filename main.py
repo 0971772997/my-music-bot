@@ -83,13 +83,20 @@ async def play(ctx, *, search: str):
         await voice_channel.connect()
 
     async with ctx.typing():
-        with yt_dlp.YoutubeDL(YTDL_OPTIONS) as ydl:
+        # Tạo một bản sao cấu hình tùy biến cho từng lượt quét
+        current_options = YTDL_OPTIONS.copy()
+        
+        # BẢO VỆ SOUNDCLOUD: Nếu không phải link YouTube, xóa bỏ cookiefile để tránh lỗi 403
+        if "youtube.com" not in search and "youtu.be" not in search:
+            if 'cookiefile' in current_options:
+                del current_options['cookiefile']
+
+        with yt_dlp.YoutubeDL(current_options) as ydl:
             try:
                 info = ydl.extract_info(search, download=False)
                 if 'entries' in info:
                     info = info['entries'][0]
                 
-                # Cách bóc tách URL an toàn, lấy luồng direct khả dụng nhất
                 url2 = info.get('url')
                 if not url2 and 'formats' in info:
                     url2 = info['formats'][0]['url']
