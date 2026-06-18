@@ -36,8 +36,14 @@ YTDL_OPTIONS = {
     'format': 'bestaudio/best', 
     'noplaylist': True, 
     'quiet': True,
-    'default_search': 'ytsearch', # Hỗ trợ tự động tìm kiếm khi gõ chữ thay vì link
-    'extractor_args': {'youtube': {'player_client': ['ios']}} # Vượt lỗi chặn bot của YouTube
+    'default_search': 'ytsearch',
+    # Chuyển sang giả lập Android và Web nhúng để né bộ lọc cực đoan của YouTube
+    'extractor_args': {
+        'youtube': {
+            'player_client': ['android', 'web_embedded'],
+            'skip': ['webpage', 'configs']
+        }
+    }
 }
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
