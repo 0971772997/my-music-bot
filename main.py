@@ -33,12 +33,12 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 music_queue = []
 
 YTDL_OPTIONS = {
-    # Thay đổi quan trọng: Ép lấy định dạng tốt nhất có sẵn (kể cả video), FFmpeg sẽ tự xử lý tách âm thanh sau.
     'format': 'best', 
     'noplaylist': True, 
     'quiet': True,
     'default_search': 'ytsearch',
-    'cookiefile': 'youtube_cookies.txt',
+    # SỬA DÒNG NÀY: Ép bot lấy đường dẫn tuyệt đối của file cookie
+    'cookiefile': os.path.join(os.path.dirname(__file__), 'youtube_cookies.txt'),
     'nocheckcertificate': True,
 }
 FFMPEG_OPTIONS = {
