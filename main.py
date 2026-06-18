@@ -37,13 +37,8 @@ YTDL_OPTIONS = {
     'noplaylist': True, 
     'quiet': True,
     'default_search': 'ytsearch',
-    # Chuyển sang giả lập Android và Web nhúng để né bộ lọc cực đoan của YouTube
-    'extractor_args': {
-        'youtube': {
-            'player_client': ['android', 'web_embedded'],
-            'skip': ['webpage', 'configs']
-        }
-    }
+    # Khai báo file cookie để bot tự động đăng nhập né bộ lọc của YouTube
+    'cookiefile': 'youtube_cookies.txt' 
 }
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
