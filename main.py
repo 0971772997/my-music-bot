@@ -33,18 +33,12 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 music_queue = []
 
 YTDL_OPTIONS = {
-    'format': 'ba/bestaudio/best',
+    'format': 'bestaudio/best', 
     'noplaylist': True, 
-    'quiet': True,
+    'quiet': False, # Bật hiển thị log chi tiết để dễ theo dõi
     'default_search': 'ytsearch',
-    # Giữ nguyên khai báo Cookie để vượt xác minh người thật
     'cookiefile': 'youtube_cookies.txt',
-    # Thêm giả lập Android & Web nhúng để ép YouTube trả về đúng định dạng âm thanh
-    'extractor_args': {
-        'youtube': {
-            'player_client': ['android', 'web_embedded']
-        }
-    }
+    # Xóa bỏ hoàn toàn phần extractor_args giả lập đi để tránh xung đột
 }
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
