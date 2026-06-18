@@ -33,16 +33,17 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 music_queue = []
 
 YTDL_OPTIONS = {
-    'format': 'bestaudio/best', 
+    # Thay đổi quan trọng: Ép lấy định dạng tốt nhất có sẵn (kể cả video), FFmpeg sẽ tự xử lý tách âm thanh sau.
+    'format': 'best', 
     'noplaylist': True, 
-    'quiet': False, # Bật hiển thị log chi tiết để dễ theo dõi
+    'quiet': True,
     'default_search': 'ytsearch',
     'cookiefile': 'youtube_cookies.txt',
-    # Xóa bỏ hoàn toàn phần extractor_args giả lập đi để tránh xung đột
+    'nocheckcertificate': True,
 }
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
-    'options': '-vn'
+    'options': '-vn' # Option -vn này sẽ tự động loại bỏ hình ảnh, chỉ giữ lại âm thanh khi phát
 }
 
 @bot.event
@@ -74,11 +75,9 @@ async def join(ctx):
 
 @bot.command(name='play')
 async def play(ctx, *, search: str):
-    # 1. Kiểm tra người dùng đã vào kênh thoại chưa
     if not ctx.author.voice:
         return await ctx.send("❌ Bạn phải vào một kênh thoại trước!")
     
-    # 2. Kết nối vào kênh nếu chưa có trong phòng
     voice_channel = ctx.author.voice.channel
     if not ctx.voice_client:
         await voice_channel.connect()
@@ -86,20 +85,20 @@ async def play(ctx, *, search: str):
     async with ctx.typing():
         with yt_dlp.YoutubeDL(YTDL_OPTIONS) as ydl:
             try:
-                # Tìm kiếm hoặc trích xuất thông tin video
                 info = ydl.extract_info(search, download=False)
-                # Nếu là kết quả tìm kiếm bằng từ khóa, lấy bài đầu tiên
                 if 'entries' in info:
                     info = info['entries'][0]
                 
-                url2 = info.get('url') or info['formats'][0]['url']
+                # Cách bóc tách URL an toàn, lấy luồng direct khả dụng nhất
+                url2 = info.get('url')
+                if not url2 and 'formats' in info:
+                    url2 = info['formats'][0]['url']
+                
                 title = info.get('title', 'Nhạc')
             except Exception as e:
-                # Hiện lỗi chi tiết ra Discord để chúng ta dễ dàng "bắt bài" YouTube
-                error_msg = str(e).split('\n')[0] # Lấy dòng lỗi đầu tiên cho gọn
+                error_msg = str(e).split('\n')[0]
                 return await ctx.send(f"❌ Lỗi trích xuất nhạc: `{error_msg}`")
 
-        # 3. Xử lý đưa vào hàng chờ phát nhạc
         song = {'url': url2, 'title': title}
         
         if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
@@ -128,7 +127,7 @@ async def resume(ctx):
 @bot.command(name='skip')
 async def skip(ctx):
     if ctx.voice_client and ctx.voice_client.is_playing():
-        ctx.voice_client.stop() # Lệnh dừng này sẽ tự kích hoạt hàm play_next ở trên
+        ctx.voice_client.stop()
         await ctx.send("⏭️ Đã bỏ qua bài hát hiện tại!")
     else:
         await ctx.send("❌ Không có bài hát nào đang phát để bỏ qua.")
@@ -137,7 +136,7 @@ async def skip(ctx):
 async def stop(ctx):
     global music_queue
     if ctx.voice_client:
-        music_queue.clear() # Xóa sạch hàng chờ
+        music_queue.clear()
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
         await ctx.send("🛑 Đã dừng phát nhạc, xóa sạch hàng chờ và rời kênh thoại!")
