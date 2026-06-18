@@ -33,7 +33,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 music_queue = []
 
 YTDL_OPTIONS = {
-    'format': 'bestaudio/best', 
+    'format': 'ba/bestaudio/best',
     'noplaylist': True, 
     'quiet': True,
     'default_search': 'ytsearch',
