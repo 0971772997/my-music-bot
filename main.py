@@ -37,13 +37,12 @@ YTDL_OPTIONS = {
     'noplaylist': True, 
     'quiet': True,
     'default_search': 'ytsearch',
-    # SỬA DÒNG NÀY: Ép bot lấy đường dẫn tuyệt đối của file cookie
     'cookiefile': os.path.join(os.path.dirname(__file__), 'youtube_cookies.txt'),
     'nocheckcertificate': True,
 }
 FFMPEG_OPTIONS = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
-    'options': '-vn' # Option -vn này sẽ tự động loại bỏ hình ảnh, chỉ giữ lại âm thanh khi phát
+    'options': '-vn' 
 }
 
 @bot.event
@@ -105,6 +104,15 @@ async def play(ctx, *, search: str):
             except Exception as e:
                 error_msg = str(e).split('\n')[0]
                 return await ctx.send(f"❌ Lỗi trích xuất nhạc: `{error_msg}`")
+
+        # ========================================================
+        # 🛡️ CHỐT CHẶN BẢO VỆ KẾT NỐI (Đã được thêm vào)
+        # ========================================================
+        if not ctx.voice_client or not ctx.voice_client.is_connected():
+            try:
+                await voice_channel.connect()
+            except discord.ClientException:
+                pass # Bỏ qua nếu bot đang tự reconnect
 
         song = {'url': url2, 'title': title}
         
